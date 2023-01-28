@@ -4,7 +4,10 @@ import com.mocoding.geometryapp.common.App
 
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    Window(
+        onCloseRequest = ::exitApplication,
+        title = "Geometry"
+    ) {
         App()
     }
 }
