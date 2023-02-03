@@ -1,4 +1,4 @@
-package com.mocoding.geometryapp.common
+package com.mocoding.geometryapp.common.event
 
 import androidx.compose.ui.geometry.Offset
 

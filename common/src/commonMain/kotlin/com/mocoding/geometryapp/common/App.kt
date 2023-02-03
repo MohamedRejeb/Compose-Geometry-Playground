@@ -4,14 +4,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.rememberDialogState
-import com.mocoding.geometryapp.common.drawing.Drawing
-import com.mocoding.geometryapp.common.tools.Pencil
+import androidx.compose.ui.graphics.Color
+import com.mocoding.geometryapp.common.event.ColorsPanelEvent
+import com.mocoding.geometryapp.common.event.ToolsPanelEvent
+import com.mocoding.geometryapp.common.state.rememberGeometryState
+import com.mocoding.geometryapp.common.ui.ColorsPanel
+import com.mocoding.geometryapp.common.ui.PlaygroundCanvas
+import com.mocoding.geometryapp.common.ui.ToolsPanel
 
 @Composable
 fun App() {
@@ -20,30 +21,12 @@ fun App() {
     val geo = rememberGeometryState()
 
     Box {
+        val drawings = (geo.drawings + geo.placeholder + geo.visibleGeoDrawings).filterNotNull()
+
         PlaygroundCanvas(
             modifier = Modifier.fillMaxSize(),
-            drawings = geo.placeholder?.let { drawing -> geo.drawings + drawing } ?: geo.drawings,
-            onEvent = { event ->
-                geo.onEvent(event)
-                /*
-                when(event) {
-                    is CanvasEvent.DragStart -> {
-                        paths = paths.toMutableList().also {
-                            it.add(listOf(event.offset))
-                        }
-                        pointsTrash = emptyList()
-                    }
-
-                    is CanvasEvent.DragCancel -> {
-                        paths = paths.toMutableList().also {
-                            it[it.lastIndex] = it[it.lastIndex].toMutableList().also { points ->
-                                points.add(event.offset)
-                            }
-                        }
-                    }
-                }
-                */
-            }
+            drawings = drawings,
+            onEvent = { event -> geo.onEvent(event) },
         )
 
         ToolsPanel(
@@ -62,6 +45,22 @@ fun App() {
             },
             isUndoEnabled = geo.drawings.isNotEmpty(),
             isRedoEnabled = geo.drawingsTrash.isNotEmpty(),
+        )
+
+        ColorsPanel(
+            modifier = Modifier
+                .fillMaxHeight(0.8f)
+                .align(Alignment.TopEnd)
+            ,
+            colors = geo.colors,
+            selectedColorIndex = geo.selectedColorIndex,
+            onEvent = { event ->
+                when(event) {
+                    is ColorsPanelEvent.OnColorSelected -> {
+                        geo.selectColor(index = event.colorIndex)
+                    }
+                }
+            },
         )
     }
 }

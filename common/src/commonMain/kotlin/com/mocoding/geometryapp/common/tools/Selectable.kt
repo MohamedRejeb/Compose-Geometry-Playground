@@ -1,11 +1,7 @@
 package com.mocoding.geometryapp.common.tools
 
-import androidx.compose.runtime.MutableState
-
-interface Selectable {
-    val selected: MutableState<Boolean>
-
-    fun toggleSelect() {
-        selected.value = !selected.value
-    }
+interface Selectable<T> {
+    val selected: Boolean
+    val onToggleSelect: (T) -> Unit
+    fun updateSelected(selected: Boolean): T
 }

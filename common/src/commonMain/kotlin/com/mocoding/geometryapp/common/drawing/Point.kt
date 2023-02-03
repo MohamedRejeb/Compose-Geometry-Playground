@@ -8,12 +8,15 @@ import androidx.compose.ui.unit.dp
 import java.util.*
 
 class Point(
-    private val point: Offset
+    private val point: Offset,
+    override val color: Color,
 ): Drawing {
 
-    override fun drawOn(drawScope: DrawScope) {
+    override fun drawOn(
+        drawScope: DrawScope,
+    ) {
         drawScope.drawCircle(
-            color = Color.Black,
+            color = color,
             radius = with(drawScope) { 6.dp.toPx() },
             center = point,
             style = Fill

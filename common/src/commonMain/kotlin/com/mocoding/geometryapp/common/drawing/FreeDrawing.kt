@@ -12,22 +12,27 @@ import com.mocoding.geometryapp.common.utils.relativeLineTo
 import java.util.*
 
 class FreeDrawing(
-    val points: List<Offset> = emptyList()
+    val points: List<Offset> = emptyList(),
+    override val color: Color
 ): Drawing {
 
     fun addPoint(point: Offset): FreeDrawing {
         return FreeDrawing(
-            points = points + point
+            points = points + point,
+            color = color
         )
     }
 
     fun addPoints(newPoints: List<Offset>): FreeDrawing {
         return FreeDrawing(
-            points = points + newPoints
+            points = points + newPoints,
+            color = color
         )
     }
 
-    override fun drawOn(drawScope: DrawScope) {
+    override fun drawOn(
+        drawScope: DrawScope
+    ) {
         if (points.size < 2) return
 
         val path = Path()
@@ -57,7 +62,7 @@ class FreeDrawing(
 
         drawScope.drawPath(
             path = path,
-            color = Color.Black,
+            color = color,
             style = Stroke(
                 width = width,
                 cap = StrokeCap.Round,

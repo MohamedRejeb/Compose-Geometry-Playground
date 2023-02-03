@@ -11,10 +11,13 @@ import java.util.UUID
 
 class Circle(
     private val centerPoint: Offset,
-    private val radius: Float
+    private val radius: Float,
+    override val color: Color
 ): Drawing {
 
-    override fun drawOn(drawScope: DrawScope) {
+    override fun drawOn(
+        drawScope: DrawScope,
+    ) {
         drawScope.drawCircle(
             color = Color.Black,
             radius = with(drawScope) { 6.dp.toPx() },
@@ -23,7 +26,7 @@ class Circle(
         )
 
         drawScope.drawCircle(
-            color = Color.Black,
+            color = color,
             radius = radius,
             center = centerPoint,
             style = Stroke(

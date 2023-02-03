@@ -12,10 +12,13 @@ import java.util.*
 
 class Line(
     val startPoint: Offset,
-    val stopPoint: Offset
+    val stopPoint: Offset,
+    override val color: Color
 ): Drawing {
 
-    override fun drawOn(drawScope: DrawScope) {
+    override fun drawOn(
+        drawScope: DrawScope,
+    ) {
         val path = Path()
         path.moveTo(startPoint)
         path.relativeLineTo(stopPoint)
@@ -24,7 +27,7 @@ class Line(
 
         drawScope.drawPath(
             path = path,
-            color = Color.Black,
+            color = color,
             style = Stroke(
                 width = width,
                 cap = StrokeCap.Round,

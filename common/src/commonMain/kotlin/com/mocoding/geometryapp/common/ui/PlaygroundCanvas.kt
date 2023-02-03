@@ -1,18 +1,20 @@
-package com.mocoding.geometryapp.common
+package com.mocoding.geometryapp.common.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import com.mocoding.geometryapp.common.drawing.Drawing
 import com.mocoding.geometryapp.common.drawing.draw
+import com.mocoding.geometryapp.common.event.CanvasEvent
 
 @Composable
 fun PlaygroundCanvas(
     modifier: Modifier,
     drawings: List<Drawing>,
-    onEvent: (CanvasEvent) -> Unit
+    onEvent: (CanvasEvent) -> Unit,
 ) {
     Canvas(
         modifier = modifier
@@ -36,7 +38,9 @@ fun PlaygroundCanvas(
             }
     ) {
         drawings.forEach { drawing ->
-            draw(drawing)
+            draw(
+                drawing = drawing,
+            )
         }
     }
 }
