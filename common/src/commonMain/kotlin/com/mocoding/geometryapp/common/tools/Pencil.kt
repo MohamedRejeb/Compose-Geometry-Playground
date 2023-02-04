@@ -48,10 +48,6 @@ data class Pencil(
                         offset = event.offset
                     )
                     lineEquation?.let {
-                        println(calcOrthogonalProjectionPoint(
-                            line = it,
-                            point = event.offset
-                        ))
                         FreeDrawing(
                             points = listOf(calcOrthogonalProjectionPoint(
                                 line = it,
@@ -78,10 +74,6 @@ data class Pencil(
                 if (lineEquation != null) {
                     lineEquation?.let {
                         placeholderDrawing?.points?.reduce{ o1, o2 -> o1 + o2 }?.let { lastPoint ->
-                            println(calcOrthogonalProjectionPoint(
-                                line = it,
-                                point = lastPoint + event.offset
-                            ))
                             placeholderDrawing?.addPoint(calcOrthogonalProjectionPoint(
                                 line = it,
                                 point = lastPoint + event.offset

@@ -45,13 +45,31 @@ data class Compass(
                 ) {
                     compassEvent = Event.ChangeAngle
                 } else {
-                    compassEvent = null
+                    compassEvent = Event.Rotate
                 }
             }
             is CanvasEvent.Drag -> {
                 when(compassEvent) {
                     Event.Move -> moveBy(event.offset)
-                    Event.Rotate -> rotateBy(0f)
+                    Event.Rotate -> {
+                        val compassDrawing = getGeoDrawing() ?: return
+                        val sideLength = compassDrawing.getSideLength(canvasSize)
+                        val newBaseLength = compassDrawing.getBaseLength(canvasSize) + event.offset.x
+                        val newHeight = calcIsoscelesTriangleHeight(
+                            side = sideLength,
+                            base = newBaseLength
+                        )
+                        val newAngle = calcTriangleAngle(
+                            side1 = sideLength,
+                            side2 = sideLength,
+                            base = newBaseLength,
+                            height = newHeight
+                        )
+
+                        if (!newAngle.isNaN() && newAngle > 10 && newAngle < 160) {
+                            rotateBy(newAngle - compassDrawing.compassAngle)
+                        }
+                    }
                     Event.ChangeAngle -> {
                         val compassDrawing = getGeoDrawing() ?: return
                         val sideLength = compassDrawing.getSideLength(canvasSize)
