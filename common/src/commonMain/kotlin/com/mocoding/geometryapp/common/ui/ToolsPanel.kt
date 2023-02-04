@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mocoding.geometryapp.common.event.ToolsPanelEvent
 import com.mocoding.geometryapp.common.tools.Tool
+import com.mocoding.geometryapp.common.tools.onToggleSelect
 
 @Composable
 fun ToolsPanel(
@@ -54,11 +55,11 @@ fun ToolsPanel(
 
         tools.forEach { tool ->
             IconButton(
-                onClick = { tool.onSelect() },
+                onClick = { tool.onToggleSelect() },
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .background(
-                        color = if (tool.selected) Color.LightGray else Color.Transparent,
+                        color = if (tool.selected) Color.Black.copy(alpha = 0.1f) else Color.Transparent,
                         shape = CircleShape
                     )
             ) {

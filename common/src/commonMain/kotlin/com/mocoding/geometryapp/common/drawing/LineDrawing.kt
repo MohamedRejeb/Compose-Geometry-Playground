@@ -5,12 +5,10 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import com.mocoding.geometryapp.common.utils.lineTo
 import com.mocoding.geometryapp.common.utils.moveTo
 import com.mocoding.geometryapp.common.utils.relativeLineTo
-import java.util.*
 
-class Line(
+class LineDrawing(
     val startPoint: Offset,
     val stopPoint: Offset,
     override val color: Color

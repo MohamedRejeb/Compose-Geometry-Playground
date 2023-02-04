@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.mocoding.geometryapp.common.event.ColorsPanelEvent
 import com.mocoding.geometryapp.common.event.ToolsPanelEvent
 import com.mocoding.geometryapp.common.state.rememberGeometryState
@@ -31,7 +30,7 @@ fun App() {
 
         ToolsPanel(
             modifier = Modifier.fillMaxHeight(0.8f),
-            tools = geo.tools,
+            tools = geo.drawingTools + geo.geoTools,
             onEvent = { event ->
                 when(event) {
                     is ToolsPanelEvent.Undo -> {

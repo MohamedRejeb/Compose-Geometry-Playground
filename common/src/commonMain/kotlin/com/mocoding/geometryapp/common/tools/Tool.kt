@@ -8,11 +8,14 @@ interface Tool {
     val icon: ImageVector
     val name: String
 
-    fun onSelect()
     fun onEvent(event: CanvasEvent)
 
     val selected: Boolean
-    val onToggleSelect: (Tool) -> Unit
+    val onToggleSelect: (name: String) -> Unit
     fun updateSelected(selected: Boolean): Tool
 
+}
+
+fun Tool.onToggleSelect() {
+    onToggleSelect(name)
 }

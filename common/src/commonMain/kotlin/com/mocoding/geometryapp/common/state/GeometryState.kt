@@ -5,12 +5,18 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import com.mocoding.geometryapp.common.drawing.geo.CompassDrawing
 import com.mocoding.geometryapp.common.drawing.Drawing
-import com.mocoding.geometryapp.common.drawing.GeoDrawing
-import com.mocoding.geometryapp.common.drawing.RulerDrawing
+import com.mocoding.geometryapp.common.drawing.geo.GeoDrawing
+import com.mocoding.geometryapp.common.drawing.geo.ProtractorDrawing
+import com.mocoding.geometryapp.common.drawing.geo.RulerDrawing
 import com.mocoding.geometryapp.common.event.CanvasEvent
 import com.mocoding.geometryapp.common.tools.*
+import com.mocoding.geometryapp.common.tools.geo.Compass
+import com.mocoding.geometryapp.common.tools.geo.Protractor
+import com.mocoding.geometryapp.common.tools.geo.Ruler
 
 @Composable
 fun rememberGeometryState(
@@ -19,9 +25,7 @@ fun rememberGeometryState(
     GeometryState()
 }
 
-class GeometryState(
-
-) {
+class GeometryState {
     var placeholder by mutableStateOf<Drawing?>(null)
     var drawings by mutableStateOf(emptyList<Drawing>())
         private set
@@ -31,11 +35,13 @@ class GeometryState(
     var visibleGeoDrawings by mutableStateOf(emptyList<GeoDrawing>())
         private set
 
-    private var hiddenGeoDrawings by mutableStateOf(listOf<GeoDrawing>(
-        RulerDrawing()
+    private var hiddenGeoDrawings by mutableStateOf(listOf(
+        RulerDrawing(),
+        CompassDrawing(),
+        ProtractorDrawing()
     ))
 
-    var tools by mutableStateOf(
+    var drawingTools by mutableStateOf(
         listOf(
             LineTool(
                 onToggleSelect = { toggleDrawingToolSelect(it) },
@@ -47,11 +53,33 @@ class GeometryState(
                 onToggleSelect = { toggleDrawingToolSelect(it) },
                 draw = { addDrawing(it) },
                 drawPlaceholder = { placeholder = it },
-                getSelectedColor = ::getSelectedColor
+                getSelectedColor = ::getSelectedColor,
+                getRulerDrawing = { visibleGeoDrawings.find { it is RulerDrawing } as? RulerDrawing }
             ),
+        )
+    )
+        private set
+
+    var geoTools by mutableStateOf(
+        listOf(
             Ruler(
                 onToggleSelect = { toggleGeoToolSelect<RulerDrawing>(it) },
-                moveBy = { moveGeoToolBy<RulerDrawing>(it) }
+                moveBy = { moveGeoToolBy<RulerDrawing>(it) },
+                rotateBy = {},
+                getGeoDrawing = { visibleGeoDrawings.find { it is RulerDrawing } as? RulerDrawing },
+            ),
+            Compass(
+                onToggleSelect = { toggleGeoToolSelect<CompassDrawing>(it) },
+                moveBy = { moveGeoToolBy<CompassDrawing>(it) },
+                rotateBy = {},
+                changeAngleBy = { changeCompassAngleBy(it) },
+                getGeoDrawing = { visibleGeoDrawings.find { it is CompassDrawing } as? CompassDrawing }
+            ),
+            Protractor(
+                onToggleSelect = { toggleGeoToolSelect<ProtractorDrawing>(it) },
+                moveBy = { moveGeoToolBy<ProtractorDrawing>(it) },
+                rotateBy = {},
+                getGeoDrawing = { visibleGeoDrawings.find { it is ProtractorDrawing } as? ProtractorDrawing }
             )
         )
     )
@@ -84,14 +112,16 @@ class GeometryState(
         placeholder = null
     }
 
-    private var hoveredToolIndex: Int = -1
-    private val hoveredTool: Tool? get() = tools.getOrNull(hoveredToolIndex)
+    private var hoveredTool: Tool? = null
 
     fun onEvent(event: CanvasEvent) {
 
         when(event) {
             is CanvasEvent.DragStart -> {
-                setHoveredToolIndex(event.offset)
+                setHoveredToolIndex(
+                    canvasSize = event.canvasSize,
+                    hoverOffset = event.offset
+                )
                 hoveredTool?.onEvent(event)
             }
             else -> hoveredTool?.onEvent(event)
@@ -123,14 +153,26 @@ class GeometryState(
         selectedColorIndex = index
     }
 
-    private fun setHoveredToolIndex(point: Offset) {
-        hoveredToolIndex = tools.indexOfFirst { it.selected }
+    private fun setHoveredToolIndex(canvasSize: Size, hoverOffset: Offset) {
+        visibleGeoDrawings.reversed().forEach { geoDrawing ->
+            val isHovered = geoDrawing.isHovered(
+                canvasSize = canvasSize,
+                hoverOffset = hoverOffset
+            )
+
+            if (isHovered) {
+                hoveredTool = geoTools.find { it.isRelatedGeoDrawing(geoDrawing) }
+                return
+            }
+        }
+        hoveredTool = drawingTools.find { it.selected }
     }
 
-    private fun toggleDrawingToolSelect(tool: Tool) {
-        val toolIndex = tools.indexOf(tool)
+    private fun toggleDrawingToolSelect(name: String) {
+        val toolIndex = drawingTools.indexOfFirst { it.name == name }
         if (toolIndex == -1) return
-        tools = tools.mapIndexed { index, t ->
+
+        drawingTools = drawingTools.mapIndexed { index, t ->
             if (index == toolIndex)
                 t.updateSelected(selected = !t.selected)
             else if (t is Pencil || t is LineTool)
@@ -140,15 +182,15 @@ class GeometryState(
         }
     }
 
-    private inline fun <reified T: GeoDrawing> toggleGeoToolSelect(tool: Tool) {
-        val toolIndex = tools.indexOf(tool)
-        if (toolIndex == -1) return
+    private inline fun <reified T: GeoDrawing> toggleGeoToolSelect(name: String) {
+        val mutableGeoTools = geoTools.toMutableList()
+        val toolIndex = mutableGeoTools.indexOfFirst { it.name == name }
+        val tool = mutableGeoTools.getOrNull(toolIndex) ?: return
 
         val selected = !tool.selected
 
-        tools = tools.toMutableList().also {
-            it[toolIndex] = tool.updateSelected(selected = selected)
-        }
+        mutableGeoTools[toolIndex] = tool.updateSelected(selected = selected)
+        geoTools = mutableGeoTools
 
         if (selected) {
             hiddenGeoDrawings.find { it is T }?.let { drawing ->
@@ -182,14 +224,14 @@ class GeometryState(
         }
     }
 
-    private fun toggleTollSelect(tool: Tool) {
-        val toolIndex = tools.indexOf(tool)
-        if (toolIndex == -1) return
-        tools = tools.mapIndexed { index, t ->
-            if (index == toolIndex)
-                t.updateSelected(selected = !t.selected)
-            else
-                t
+    private fun changeCompassAngleBy(angle: Float) {
+        val geoDrawingIndex = visibleGeoDrawings.indexOfFirst { it is CompassDrawing }
+        if (geoDrawingIndex == -1) return
+
+        visibleGeoDrawings = visibleGeoDrawings.toMutableList().also {
+            (it[geoDrawingIndex] as? CompassDrawing)?.let { compassDrawing ->
+                it[geoDrawingIndex] = compassDrawing.changeAngleBy(angle)
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import com.mocoding.geometryapp.common.drawing.Drawing
@@ -21,7 +22,10 @@ fun PlaygroundCanvas(
             .pointerInput(true) {
                 detectDragGestures(
                     onDragStart = { startOffset ->
-                        onEvent(CanvasEvent.DragStart(startOffset))
+                        onEvent(CanvasEvent.DragStart(
+                            canvasSize = Size(size.width.toFloat(), size.height.toFloat()),
+                            offset = startOffset
+                        ))
                     },
                     onDragEnd = {
                         onEvent(CanvasEvent.DragStop)
