@@ -25,12 +25,6 @@ Geometry playground made using Compose multiplatform that works for both android
 <img width="350" alt="Screenshot 2023-02-05 at 2 32 28 PM" src="https://user-images.githubusercontent.com/41842296/216825166-d35f070c-54d6-4809-96be-6469e83ad6b5.png">
 
 
-## Preview
-
-https://user-images.githubusercontent.com/41842296/208382715-2030a500-5995-49b6-99c1-a6df4e1182a5.mp4
-
-
-
 ## Acknowledgements
 
  - [Graphics in compose](https://developer.android.com/jetpack/compose/graphics/draw/overview)
