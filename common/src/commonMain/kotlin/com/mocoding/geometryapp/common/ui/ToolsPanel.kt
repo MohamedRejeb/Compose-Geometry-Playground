@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Colors
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -23,7 +24,8 @@ fun ToolsPanel(
     tools: List<Tool>,
     onEvent: (ToolsPanelEvent) -> Unit,
     isUndoEnabled: Boolean,
-    isRedoEnabled: Boolean
+    isRedoEnabled: Boolean,
+    colors: Colors
 ) {
 
     Column(
@@ -37,7 +39,10 @@ fun ToolsPanel(
         ) {
             Icon(
                 Icons.Default.ArrowBack,
-                contentDescription = "Undo"
+                contentDescription = "Undo",
+                tint = colors.onBackground.copy(
+                    alpha = if (isUndoEnabled) 1f else 0.4f
+                )
             )
         }
 
@@ -45,11 +50,14 @@ fun ToolsPanel(
             onClick = {
                 onEvent(ToolsPanelEvent.Redo)
             },
-            enabled = isRedoEnabled
+            enabled = isRedoEnabled,
         ) {
             Icon(
                 Icons.Default.ArrowForward,
-                contentDescription = "Redo"
+                contentDescription = "Redo",
+                tint = colors.onBackground.copy(
+                    alpha = if (isRedoEnabled) 1f else 0.4f
+                )
             )
         }
 
@@ -65,7 +73,8 @@ fun ToolsPanel(
             ) {
                 Icon(
                     tool.icon,
-                    contentDescription = tool.name
+                    contentDescription = tool.name,
+                    tint = colors.onBackground
                 )
             }
         }
