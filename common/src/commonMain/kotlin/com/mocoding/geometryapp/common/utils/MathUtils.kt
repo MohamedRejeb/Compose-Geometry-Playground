@@ -30,6 +30,10 @@ fun calcDistanceBetweenTwoPoint(point1: Offset, point2: Offset): Float {
  * Calculate Orthogonal projection Point between one Line and one Point
  */
 fun calcOrthogonalProjectionPoint(line: LineEquation, point: Offset): Offset {
+    return Offset(
+        x = point.x,
+        y = line.intercept
+    )
     // if the line is horizontal
     if (line.slope == 0f) return Offset(point.x, line.getYPointFrom(0f))
     // if the line is vertical

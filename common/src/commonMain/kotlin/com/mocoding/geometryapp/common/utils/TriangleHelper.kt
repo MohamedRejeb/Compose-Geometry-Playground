@@ -17,15 +17,15 @@ fun calcTriangleHeight(side1: Float, side2: Float, base: Float, angle: Float): F
     )
 }
 
-fun calcTriangleAngle(side1: Float, side2: Float, base: Float, height: Float): Float {
-    val area = base * height / 2f
-    val sinAngle = area * 2f / side1 / side2
+fun calcTriangleAngle(side1: Float, side2: Float, base: Float): Float {
+//    val area = base * height / 2f
+//    val sinAngle = area * 2f / side1 / side2
     val cosAngle = (side1.pow(2) + side2.pow(2) - base.pow(2)) / (2 * side1 * side2)
 
-    val angleFromSin =
-        if (sinAngle >= 1f) asin(1f).toDegree()
-        else if (sinAngle <= -1f) asin(-1f).toDegree()
-        else asin(sinAngle).toDegree()
+//    val angleFromSin =
+//        if (sinAngle >= 1f) asin(1f).toDegree()
+//        else if (sinAngle <= -1f) asin(-1f).toDegree()
+//        else asin(sinAngle).toDegree()
 
     val angleFromCos =
         if (cosAngle >= 1f) acos(1f).toDegree()

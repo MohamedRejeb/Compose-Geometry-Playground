@@ -10,7 +10,7 @@ interface GeoDrawing: Drawing {
     val rotation: Float
 
     fun moveBy(offset: Offset): GeoDrawing
-    fun rotateBy(rotation: Float): GeoDrawing
+    fun rotateBy(angle: Float): GeoDrawing
 
     fun isHovered(
         canvasSize: Size,

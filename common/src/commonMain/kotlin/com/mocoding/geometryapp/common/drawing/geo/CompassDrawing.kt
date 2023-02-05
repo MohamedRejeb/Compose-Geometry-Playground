@@ -10,7 +10,7 @@ import com.mocoding.geometryapp.common.utils.*
 
 data class CompassDrawing(
     override val position: Offset = Offset.Zero,
-    override val rotation: Float = 80f,
+    override val rotation: Float = 0f,
     val compassAngle: Float = 30f
 ): GeoDrawing {
 
@@ -71,8 +71,8 @@ data class CompassDrawing(
         return copy(position = this.position + offset)
     }
 
-    override fun rotateBy(rotation: Float): GeoDrawing {
-        return copy(rotation = this.rotation + rotation)
+    override fun rotateBy(angle: Float): GeoDrawing {
+        return copy(rotation = this.rotation + angle)
     }
 
     fun changeAngleBy(angle: Float): GeoDrawing {
@@ -89,14 +89,11 @@ data class CompassDrawing(
 
         val rotationCenter = getRotationCenter(size, topLeft)
 
-        println("hoverOffset $hoverOffset")
-        println("hoverOffset rotated ${hoverOffset.rotateBy(rotation, rotationCenter)}")
+        if (hoverOffset.rotateBy(-rotation, rotationCenter).x < topLeft.x
+            || hoverOffset.rotateBy(-rotation, rotationCenter).y < topLeft.y) return false
 
-        if (hoverOffset.rotateBy(rotation, rotationCenter).x < topLeft.x
-            || hoverOffset.rotateBy(rotation, rotationCenter).y < topLeft.y) return false
-
-        if (hoverOffset.rotateBy(rotation, rotationCenter).x > topLeft.x + size.width
-            || hoverOffset.rotateBy(rotation, rotationCenter).y > topLeft.y + size.height) return false
+        if (hoverOffset.rotateBy(-rotation, rotationCenter).x > topLeft.x + size.width
+            || hoverOffset.rotateBy(-rotation, rotationCenter).y > topLeft.y + size.height) return false
 
         return true
     }
@@ -111,7 +108,7 @@ data class CompassDrawing(
 
         val rotationCenter = getRotationCenter(size, topLeft)
 
-        if (hoverOffset.rotateBy(rotation, rotationCenter).y < (topLeft.y + size.height/3f)) return false
+        if (hoverOffset.rotateBy(-rotation, rotationCenter).y > (topLeft.y + size.height/3f)) return false
 
         return true
     }
@@ -126,8 +123,8 @@ data class CompassDrawing(
 
         val rotationCenter = getRotationCenter(size, topLeft)
 
-        if (hoverOffset.rotateBy(rotation, rotationCenter).x < topLeft.x + size.width/2f
-            || hoverOffset.rotateBy(rotation, rotationCenter).y < topLeft.y + size.height/2f) return false
+        if (hoverOffset.rotateBy(-rotation, rotationCenter).x < topLeft.x + size.width/2f
+            || hoverOffset.rotateBy(-rotation, rotationCenter).y < topLeft.y + size.height/2f) return false
 
         return true
     }
@@ -166,7 +163,7 @@ data class CompassDrawing(
         return getRotationCenter(size, topLeft)
     }
 
-    private fun getSize(canvasSize: Size): Size {
+    fun getSize(canvasSize: Size): Size {
         val sideLength = getSideLength(canvasSize)
         val base = getBaseLength(canvasSize)
         val height = calcTriangleHeight(
@@ -179,7 +176,7 @@ data class CompassDrawing(
         return Size(base, height)
     }
 
-    private fun getTopLeft(canvasSize: Size, toolSize: Size): Offset {
+    fun getTopLeft(canvasSize: Size, toolSize: Size): Offset {
         val x = (canvasSize.width - toolSize.width) / 2f
         val y = (canvasSize.height - toolSize.height) / 2f
 

@@ -26,6 +26,8 @@ fun rememberGeometryState(
 }
 
 class GeometryState {
+    var isDarkMode by mutableStateOf(false)
+
     var placeholder by mutableStateOf<Drawing?>(null)
     var drawings by mutableStateOf(emptyList<Drawing>())
         private set
@@ -65,15 +67,19 @@ class GeometryState {
             Ruler(
                 onToggleSelect = { toggleGeoToolSelect<RulerDrawing>(it) },
                 moveBy = { moveGeoToolBy<RulerDrawing>(it) },
-                rotateBy = {},
+                rotateBy = { rotateGeoToolBy<RulerDrawing>(it) },
                 getGeoDrawing = { visibleGeoDrawings.find { it is RulerDrawing } as? RulerDrawing },
             ),
             Compass(
                 onToggleSelect = { toggleGeoToolSelect<CompassDrawing>(it) },
                 moveBy = { moveGeoToolBy<CompassDrawing>(it) },
-                rotateBy = {},
+                rotateBy = { rotateGeoToolBy<CompassDrawing>(it) },
                 changeAngleBy = { changeCompassAngleBy(it) },
-                getGeoDrawing = { visibleGeoDrawings.find { it is CompassDrawing } as? CompassDrawing }
+                getGeoDrawing = { visibleGeoDrawings.find { it is CompassDrawing } as? CompassDrawing },
+
+                draw = { addDrawing(it) },
+                drawPlaceholder = { placeholder = it },
+                getSelectedColor = ::getSelectedColor,
             ),
             Protractor(
                 onToggleSelect = { toggleGeoToolSelect<ProtractorDrawing>(it) },
@@ -221,6 +227,18 @@ class GeometryState {
 
         visibleGeoDrawings = visibleGeoDrawings.toMutableList().also {
             it[geoDrawingIndex] = it[geoDrawingIndex].moveBy(offset)
+        }
+    }
+
+    private inline fun <reified T: GeoDrawing> rotateGeoToolBy(angle: Float) {
+        val geoDrawingIndex = visibleGeoDrawings.indexOfFirst { it is T }
+        if (geoDrawingIndex == -1) return
+
+        println(geoDrawingIndex)
+        println(visibleGeoDrawings)
+
+        visibleGeoDrawings = visibleGeoDrawings.toMutableList().also {
+            it[geoDrawingIndex] = it[geoDrawingIndex].rotateBy(angle)
         }
     }
 
