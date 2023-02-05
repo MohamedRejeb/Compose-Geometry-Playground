@@ -68,8 +68,8 @@ data class ProtractorDrawing(
         repeat(numberOfUnits + 1) { unitNumber ->
             val angle = unitNumber * 10f
 
-            val x = abs(radius - center.x)
-            val y = abs(center.y)
+            val x = center.x - radius
+            val y = center.y
 
             if (unitNumber > 0)
                 drawScope.drawIntoCanvas { canvas ->
